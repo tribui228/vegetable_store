@@ -1,0 +1,104 @@
+﻿@model IEnumerable<Web_market.Models.Account>
+
+@{
+    ViewData["Title"] = "Quản lý tài khoản";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+
+
+
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800">Tables</h1>
+    <p class="mb-4">
+        Bảng tài khoản truy cập
+        <a target="_blank"
+           asp-area="Admin" asp-controller="AdminAccounts" asp-action="Create">Tạo mới tai khoản</a>.
+    </p>
+    </p>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                   <div class="d-md-flex">                 
+                        <div class="m-b-10 m-r-15">
+                            <select class="custom-select" id="IDrole" name="IDrole" style="min-width: 200px" asp-items="ViewBag.QuyenTruyCap"> 
+                                    <option value="0" disabled selected>Chọn quyền truy cập </option>
+                            </select>
+                        </div>
+                        <div class="m-b-10 ">
+                            <select class="custom-select" id="IDstatus" name="IDstatus" style="min-width: 200px" asp-items="ViewBag.lsTrangThai">
+                                <option value="" disabled selected>Chọn trạng thái </option>
+                            </select>
+                        </div>
+                    </div>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Fullname</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Lần đăng nhập</th>
+                            <th>Quyền truy cập</th>
+                            <th>Trạng thái</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th>ID</th>
+                            <th>Fullname</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Lần đăng nhập</th>
+                            <th>Quyền truy cập</th>
+                            <th>Trạng thái</th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        @if(Model !=null)
+                        {
+                            @foreach(var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.AccountId</td>
+                                    <td>@item.FullName</td>
+                                    <td>@item.Email</td>
+                                    <td>@item.Phone</td>
+                                    <td>@item.LastLogin</td>
+                                    <td>@item.Role.Description</td>
+                                    <td>
+                                        @if( @item.Active)
+                                        {
+                                        <td class="status"><span class="active">Active</span></td>
+                                        }
+                                        else
+                                        {
+                                        <td class="status"><span class="warning">Block</span></td>
+                                        }
+
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-primary" asp-area="Admin" asp-controller="AdminRoles" asp-action="Details" asp-route-id="@item.AccountId">Xem</a>
+                                        <a class="btn btn-secondary" asp-area="Admin" asp-controller="AdminRoles" asp-action="Edit" asp-route-id="@item.AccountId">Sửa</a>
+                                        <a class="btn btn-danger" asp-area="Admin" asp-controller="AdminRoles" asp-action="Delete" asp-route-id="@item.AccountId">Xóa</a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        
+                        
+                        
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>

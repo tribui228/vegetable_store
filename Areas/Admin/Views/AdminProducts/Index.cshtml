@@ -1,0 +1,158 @@
+﻿@model PagedList.Core.IPagedList<Web_market.Models.Product>
+@using PagedList.Core.Mvc
+@{
+    int CurrentPage = ViewBag.CurrentPage;
+    ViewData["Title"] = "Danh sách sản phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800"></h1>
+    <p class="mb-4">
+        Danh sách sản phẩm : trang @CurrentPage
+        </br>
+      
+        <span></span>
+    </p>
+
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered"  width="100%" cellspacing="0">
+                    <div class="d-md-flex">
+                        <div class="mb-3 mr-4">
+                            <select class="custom-select" id="txtCatID" name="txtCatID" style="min-width: 200px" asp-items="ViewBag.CatId ">
+                                <option selected>Danh mục </option>
+                                <option value="0">Tất cả </option>
+                            </select>
+                              
+                        </div>
+                        
+                        <div class="input-affix m-v-10">
+                            <i class="prefix-icon anticon anticon-search opacity-04"></i>
+                            <input id="keyword" name="keyword" type="text" class="form-control" placeholder="Tìm kiếm sản phẩm">
+                        </div>
+                    
+                    </div>
+                        <div class="col lg-4 text-right">
+                            <a class="btn btn-primary mb-5 ml-3 " asp-area="Admin" asp-controller="AdminProducts" asp-action="Create">Thêm sản phẩm mới</a>
+                        </div>
+                    </div>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Danh mục </th>
+                            <th>Giá</th>
+                            <th>Tồn kho</th>
+                            <th>Trạng thái</th>
+                         
+                            <th>Quyền </th
+                           
+                    </thead>
+                    
+                    <tbody id="records_table">
+                        @if (Model != null)
+                        {
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.ProductId</td>
+                                    <td>@item.ProductName</td>
+                                    <td>@item.Cat.CatName</td>
+                                    <td>@item.Price.Value.ToString("#,##0") VND </td>
+                                    <td>@item.UnitsInStock</td>
+
+                                    @if (@item.UnitsInStock.Value > 0)
+                                    {
+                                        <td><span class="badge badge-success">Còn hàng</span></td>
+
+                                    }
+                                    else
+                                    {
+                                        <td class="status"><span class="badge badge-danger">Hết hàng</span></td>
+                                    }
+
+                                    
+
+                                    <td>
+                                        <a class="btn btn-primary" asp-area="Admin" asp-controller="AdminProducts" asp-action="Details" asp-route-id="@item.ProductId">Xem</a>
+                                        <a class="btn btn-secondary" asp-area="Admin" asp-controller="AdminProducts" asp-action="Edit" asp-route-id="@item.ProductId">Sửa</a>
+                                        <a class="btn btn-danger" asp-area="Admin" asp-controller="AdminProducts" asp-action="Delete" asp-route-id="@item.ProductId">Xóa</a>
+
+                                    </td>
+                                    
+                                </tr>
+                            }
+                        }
+
+
+
+
+                    </tbody>
+                </table>
+
+                <div aria-label="Page navigation example">
+                    <ul class="pagination">
+                        <pager class="fa-pager-container" list="@Model" asp-area="Admin" asp-action="Index" asp-controller="AdminProducts" asp-route-CatID="@ViewBag.CurrentCateID" />
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+@section Scripts{
+<script>
+    $(document).ready(function () {
+        jQuery("#txtCatID").change(function () {
+            var catID = jQuery(this).children(":selected").attr("value");
+            catID = parseFloat(catID);
+            $('#txtCatID option')
+                .removeAttr('selected');
+            $("#txtCatID > [value=" + catID + "]").attr("selected", "true");
+            $.ajax({
+                url: '/Admin/AdminProducts/Filtter',
+                datatype: "json",
+                type: "GET",
+                data: {
+                    CatID: catID
+                },
+                async: true,
+                success: function (results) {
+                    if (results.status == "success") {
+                        window.location.href = results.redirectUrl;
+                    }
+                },
+                error: function (xhr) {
+                    alert('error');
+                }
+            });
+        });
+
+        $("#keyword").keyup(function () {
+            var strkeyword = $('#keyword').val();
+            $.ajax({
+                url: '/Admin/Search/FindProduct/',
+                datatype: "json",
+                type: "POST",
+                data: { keyword: strkeyword },
+                async: true,
+                success: function (results) {
+                    $("#records_table").html("");
+                    $("#records_table").html(results);
+                },
+                error: function (xhr) {
+                    alert('error');
+                }
+            });
+        });
+    });
+</script>
+
+}

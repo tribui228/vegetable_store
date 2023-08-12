@@ -1,0 +1,65 @@
+﻿@model IEnumerable<Web_market.Models.Role>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800"></h1>
+    <p class="mb-4">
+       
+        </br>
+        <a target="_blank"
+           asp-area="Admin" asp-controller="Home" asp-action="Index">Trang chủ Admin</a>.
+        <span></span>
+    </p>
+<div class="card shadow mb-4">
+<div class="card-body">
+<div class="table-responsive">
+    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <div class="d-md-flex">
+
+
+                        <div class="col lg-4 text-right">
+                            <a class="btn btn-primary mb-3 ml-5 " asp-area="Admin" asp-controller="AdminRoles" asp-action="Create">Thêm role</a>
+                        </div>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Mô tả</th>
+                <th>#</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            @if(Model != null)
+            {
+                @foreach(var item in Model)
+                {
+                  <tr>
+                    <td>@item.RoleId</td>
+                    <td>@item.RoleName</td>
+                    <td>@item.Description</td>
+                    <td>
+                            <a  class="btn btn-primary" asp-area="Admin" asp-controller="AdminRoles" asp-action="Details" asp-route-id="@item.RoleId">Xem</a>
+                            <a  class="btn btn-secondary" asp-area="Admin" asp-controller="AdminRoles" asp-action="Edit" asp-route-id="@item.RoleId">Sửa</a>
+                            <a class="btn btn-danger" asp-area="Admin" asp-controller="AdminRoles" asp-action="Delete" asp-route-id="@item.RoleId">Xóa</a>
+                     </td>
+                    
+                    
+                    
+                  </tr> 
+                }
+            }
+           
+        </tbody>
+        </div>
+        </div>
+    </div>
+    </table>
+</div>
+</div>
