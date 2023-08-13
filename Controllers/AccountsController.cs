@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NToastNotify;
 using System.Security.Claims;
 using Web_market.Extensions;
 using Web_market.Helpers;
@@ -16,10 +17,13 @@ namespace Web_market.Controllers
 
         private readonly ILogger<HomeController> _logger;
         private readonly DbMarketsContext _context;
-        public AccountsController(ILogger<HomeController> logger, DbMarketsContext context)
+        private readonly IToastNotification _toastNotification;
+
+        public AccountsController(ILogger<HomeController> logger, DbMarketsContext context, IToastNotification toastNotification)
         {
             _logger = logger;
             _context = context;
+            _toastNotification = toastNotification;
         }
         [HttpGet]
         [AllowAnonymous]
@@ -53,6 +57,7 @@ namespace Web_market.Controllers
                     {
                         _context.Add(khachhang);
                         await _context.SaveChangesAsync();
+                        _toastNotification.AddSuccessToastMessage("Đăng ký thành công");
                         //Lưu Session MaKh
                         HttpContext.Session.SetString("CustomerId", khachhang.CustomerId.ToString());
                         var taikhoanID = HttpContext.Session.GetString("CustomerId");
@@ -85,7 +90,28 @@ namespace Web_market.Controllers
         }
 
 
+        [Route("tai-khoan-cua-toi.html", Name = "Dashboard")]
+        public IActionResult Dashboard()
+        {
+            var taikhoanID = HttpContext.Session.GetString("CustomerId");
+            if (taikhoanID != null)
+            {
+                var khachhang = _context.Customers.AsNoTracking().SingleOrDefault(x => x.CustomerId == Convert.ToInt32(taikhoanID));
+                if (khachhang != null)
+                {
+                    var lsDonHang = _context.Orders
+                        .Include(x => x.TransactStatus)
+                        .AsNoTracking()
+                        .Where(x => x.CustomerId == khachhang.CustomerId)
+                        .OrderByDescending(x => x.OrderDate)
+                        .ToList();
+                    ViewBag.DonHang = lsDonHang;
+                    return View(khachhang);
+                }
 
+            }
+            return RedirectToAction("Login");
+        }
 
         [AllowAnonymous]
         [Route("dang-nhap.html", Name = "DangNhap")]
@@ -159,8 +185,38 @@ namespace Web_market.Controllers
             }
             return View(customer);
         }
+        public IActionResult ValidatePhone(string Phone)
+        {
+            try
+            {
+                var khachhang = _context.Customers.AsNoTracking().SingleOrDefault(x => x.Phone.ToLower() == Phone.ToLower());
+                if (khachhang != null)
+                    return Json(data: "Số điện thoại : " + Phone + "đã được sử dụng");
 
+                return Json(data: true);
 
+            }
+            catch
+            {
+                return Json(data: true);
+            }
+        }
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ValidateEmail(string Email)
+        {
+            try
+            {
+                var khachhang = _context.Customers.AsNoTracking().SingleOrDefault(x => x.Email.ToLower() == Email.ToLower());
+                if (khachhang != null)
+                    return Json(data: "Email : " + Email + " đã được sử dụng");
+                return Json(data: true);
+            }
+            catch
+            {
+                return Json(data: true);
+            }
+        }
         [HttpGet]
         [Route("dang-xuat.html", Name = "DangXuat")]
         public IActionResult Logout()
