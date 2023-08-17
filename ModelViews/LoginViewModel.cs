@@ -9,7 +9,7 @@ namespace Web_market.ModelViews
         [Required(ErrorMessage = ("Vui lòng nhập Email"))]
         [Display(Name = "Địa chỉ Email")]
         [EmailAddress(ErrorMessage = "Sai định dạng Email")]
-        public string UserName { get; set; }
+        public string Email { get; set; }
 
         [Display(Name = "Mật khẩu")]
         [Required(ErrorMessage = "Vui lòng nhập mật khẩu")]

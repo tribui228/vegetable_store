@@ -1,5 +1,6 @@
 ﻿﻿@using Microsoft.AspNetCore.Http
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
 <header class="main-header_area position-relative">
     <div class="header-top border-bottom d-none d-md-block">
         <div class="container">
@@ -46,7 +47,7 @@
             <div class="row align-items-center">
                 <div class="col-lg-12">
                     <div class="header-middle-wrap">
-                        <a href="index.html" class="header-logo">
+                        <a href="/" class="header-logo">
                             <img src="~/assets/images/logo/dark.png" alt="Header Logo">
                         </a>
                         <div class="header-search-area d-none d-lg-block">
@@ -70,10 +71,14 @@
                                         <i class="pe-7s-users"></i>
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="settingButton">
-                                        @if (@HttpContextAccessor.HttpContext.Session.GetInt32("CustomerId") != null)
-                                        {
-                                            <li><a class="dropdown-item" href="/tai-khoan-cua-toi.html">Tài khoản của tôi</a></li>
-                                            <li><a class="dropdown-item" href="dang-xuat.html">Đăng xuất</a></li>
+                                        @if (User.Identity.IsAuthenticated)
+                                        {   
+                                            <li>
+                                                <a class="dropdown-item" href="/tai-khoan-cua-toi.html"> <i class="pe-7s-user"></i> @User.Identity.Name </a>
+                                                
+
+                                             </li>
+                                            <li><a class="dropdown-item" href="/dang-xuat.html">Đăng xuất</a></li>
                                         }
                                         else
                                         {

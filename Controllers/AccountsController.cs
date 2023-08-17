@@ -12,6 +12,7 @@ using static Web_market.ModelViews.RegisterVM;
 
 namespace Web_market.Controllers
 {
+    [Authorize]
     public class AccountsController : Controller
     {
 
@@ -57,7 +58,6 @@ namespace Web_market.Controllers
                     {
                         _context.Add(khachhang);
                         await _context.SaveChangesAsync();
-                        _toastNotification.AddSuccessToastMessage("Đăng ký thành công");
                         //Lưu Session MaKh
                         HttpContext.Session.SetString("CustomerId", khachhang.CustomerId.ToString());
                         var taikhoanID = HttpContext.Session.GetString("CustomerId");
@@ -88,7 +88,6 @@ namespace Web_market.Controllers
                 return View(taikhoan);
             }
         }
-
 
         [Route("tai-khoan-cua-toi.html", Name = "Dashboard")]
         public IActionResult Dashboard()
@@ -135,15 +134,16 @@ namespace Web_market.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    bool isEmail = Utilities.IsValidEmail(customer.UserName);
+                    bool isEmail = Utilities.IsValidEmail(customer.Email);
                     if (!isEmail) return View(customer);
 
-                    var khachhang = _context.Customers.AsNoTracking().SingleOrDefault(x => x.Email.Trim() == customer.UserName);
+                    var khachhang = _context.Customers.AsNoTracking().SingleOrDefault(x => x.Email.Trim() == customer.Email);
 
                     if (khachhang == null) return RedirectToAction("DangkyTaiKhoan");
                     string pass = (customer.Password + khachhang.Salt.Trim()).ToMD5();
                     if (khachhang.Password != pass)
                     {
+                        _toastNotification.AddWarningToastMessage("Mât khẩu không đúng,vui lòng nhập lai");
                         return View(customer);
                     }
                     //kiem tra xem account co bi disable hay khong
@@ -166,15 +166,14 @@ namespace Web_market.Controllers
                     ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, "login");
                     ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
                     await HttpContext.SignInAsync(claimsPrincipal);
-
-                    if (!string.IsNullOrEmpty(returnUrl))
+                    _toastNotification.AddSuccessToastMessage("Đăng nhập thành công");
+                    if (string.IsNullOrEmpty(returnUrl))
                     {
-                        return LocalRedirect(returnUrl);
+                        return RedirectToAction("Dashboard", "Accounts");
                     }
                     else
                     {
-
-                        return Redirect("checkout.html");
+                        return Redirect(returnUrl);
                     }
                 }
 
@@ -216,6 +215,43 @@ namespace Web_market.Controllers
             {
                 return Json(data: true);
             }
+        }
+        [HttpPost]
+        public IActionResult ChangePassword(ChangePasswordViewModel model)
+        {
+            try
+            {
+                var taikhoanID = HttpContext.Session.GetString("CustomerId");
+                if (taikhoanID == null)
+                {
+                    return RedirectToAction("Login", "Accounts");
+                }
+                var taikhoan = _context.Customers.Find(Convert.ToInt32(taikhoanID));
+                if (taikhoan == null) return RedirectToAction("Register", "Accounts");
+                var pass = (model.PasswordNow.Trim()+taikhoan.Salt.Trim()).ToMD5();
+                if (pass == taikhoan.Password)
+                {
+                    string passnew = (model.Password.Trim() + taikhoan.Salt.Trim()).ToMD5();
+                    taikhoan.Password = passnew;
+                    _context.Update(taikhoan);
+                    _context.SaveChanges();
+                    _toastNotification.AddSuccessToastMessage("Thông tin tài khoản đã được update");
+                    return RedirectToAction("Dashboard", "Accounts");
+
+                }
+                else
+                {
+                    _toastNotification.AddErrorToastMessage("Sai mật khẩu ");
+                    return RedirectToAction("Dashboard", "Accounts");
+                }
+            }
+            catch
+            {
+                _toastNotification.AddErrorToastMessage("Thay đổi mật khẩu không thành công");
+                return RedirectToAction("Dashboard", "Accounts");
+            }
+            _toastNotification.AddErrorToastMessage("Thay đổi mật khẩu không thành công");
+            return RedirectToAction("Dashboard", "Accounts");
         }
         [HttpGet]
         [Route("dang-xuat.html", Name = "DangXuat")]

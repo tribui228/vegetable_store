@@ -1,0 +1,40 @@
+﻿@model List<Order>
+
+
+
+@if (Model != null && Model.Count() > 0)
+{
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <tbody>
+                <tr>
+                    <th>ID </th>
+                    <th>Ngaỳ mua hàng </th>
+                    <th>Tổng tiền </th>
+                    <th></th>
+                </tr>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><a class="account-order-id">@item.OrderId </a></td>
+                        <td>@item.OrderDate</td>
+                        <td>@item.ShipDate</td>
+                        <td>@item.TransactStatus</td>    
+                        <td>@item.TotalMoney.ToString("#,##0")VNĐ</td>
+                        <td>
+                            <a href="javascript:void(0)" class="xemdonhang" data-madonhang="@item.OrderId">Xem đơn hàng</a>
+                        </td>
+                    </tr>
+
+                }
+            </tbody>
+        </table>
+    </div>
+
+}
+else
+{
+    <div>
+        <h1>Chua co hang ban oi!</h1>
+    </div>
+}

@@ -7,21 +7,22 @@ using System.Text.Unicode;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
-/*builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(p =>
                 {
                     p.Cookie.Name = "UserLoginCookie";
-                    p.ExpireTimeSpan = TimeSpan.FromDays(1);
-                    //p.LoginPath = "/dang-nhap.html";
-                    //p.LogoutPath = "/dang-xuat/html";
-                    p.AccessDeniedPath = "/not-found.html";
-                });*/
+                    p.ExpireTimeSpan = TimeSpan.FromMinutes(1);
+                    p.LoginPath = "/dang-nhap.html";
+                    p.LogoutPath = "/dang-xuat/html";
+                    p.AccessDeniedPath = "/";
+                });
 builder.Services.AddSingleton<HtmlEncoder>(
 
      HtmlEncoder.Create(allowedRanges: new[] { UnicodeRanges.All }));
 
 builder.Services.AddDbContext<DbMarketsContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("dbMarkets")));
+
 builder.Services.AddSession();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -60,8 +61,9 @@ app.UseStaticFiles();
 
 app.UseRouting();
 app.UseSession();
-app.UseAuthorization();
 app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseNToastNotify();
 app.MapRazorPages();
 app.UseEndpoints(endpoints =>

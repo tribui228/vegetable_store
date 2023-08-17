@@ -36,9 +36,9 @@
                         <li class="nav-item">
                             <a class="nav-link" id="account-orders-tab" data-bs-toggle="tab" href="#account-orders" role="tab" aria-controls="account-orders" aria-selected="false">Đơn hàng</a>
                         </li>
-                       @* <li class="nav-item">
+                        <li class="nav-item">
                             <a class="nav-link" id="account-address-tab" data-bs-toggle="tab" href="#account-address" role="tab" aria-controls="account-address" aria-selected="false">Addresses</a>
-                        </li>*@
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" id="account-details-tab" data-bs-toggle="tab" href="#account-details" role="tab" aria-controls="account-details" aria-selected="false">Thay đổi mật khẩu</a>
                         </li>
@@ -68,52 +68,31 @@
                         <div class="tab-pane fade" id="account-orders" role="tabpanel" aria-labelledby="account-orders-tab">
                             <div class="myaccount-orders">
                                 <h4 class="small-title">Danh sách đơn hàng </h4>
-                                @*@await Html.PartialAsync("_DonhangPartialView", Danhsachkhachhang)*@
-                                <div class="table-responsive">
-                                    <table class="table table-bordered table-hover">
-                                        <tbody>
-                                            <tr>
-                                                <th>Id</th>
-                                                <th>Ngày mua hàng</th>
-                                                <th>Ngày ship</th>
-                                                <th>Trạng thái</th>
-                                                <th>Tổng tiền</th>
-                                                <th></th>
-                                            </tr>
-                                            @foreach (var item in Danhsachkhachhang)
-                                            {
-                                        <tr>
-                                            <td><a class="account-order-id">@item.OrderId </a></td>
-                                            <td>@item.OrderDate</td>
-                                            <td>@item.ShipDate</td>
-                                            @if (item.Deleted != true)
-                                            {
-                                                <td>Đang xử lý</td>
-                                            }
-                                            else
-                                            {
-                                                <td>Đã giau</td>
-                                            }
-                                            <td>@item.TotalMoney.ToString("#,##0")VNĐ</td>
-                                            <td>
-                                                <a href="javascript:void(0)" class="xemdonhang" data-madonhang="@item.OrderId">Xem đơn hàng</a>
-                                            </td>
-                                        </tr>
-                                            }
-
-
-                                        </tbody>
-                                    </table>
-                                </div>
+                                @await Html.PartialAsync("_DonhangPartialView", Danhsachkhachhang)
+                                
+                              
                             </div>
                             <hr />
-                            <div id="records_table">
-
-                            </div>
-
-
                         </div>
-
+                        <div class="tab-pane fade" id="account-address" role="tabpanel" aria-labelledby="account-address-tab">
+                            <div class="myaccount-address">
+                                <p>The following addresses will be used on the checkout page by default.</p>
+                                <div class="row">
+                                    <div class="col">
+                                        <h4 class="small-title">BILLING ADDRESS</h4>
+                                        <address>
+                                            1234 Heaven Stress, Beverly Hill OldYork UnitedState of Lorem
+                                        </address>
+                                    </div>
+                                    <div class="col">
+                                        <h4 class="small-title">SHIPPING ADDRESS</h4>
+                                        <address>
+                                            1234 Heaven Stress, Beverly Hill OldYork UnitedState of Lorem
+                                        </address>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                             <div class="tab-pane fade" id="account-details" role="tabpanel" aria-labelledby="account-details-tab">
                                 @await Html.PartialAsync("ChangePasswordPartialView", changePassword)
                             </div>
